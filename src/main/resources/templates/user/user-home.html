@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Page</title>
+</head>
+<body>
+
+<h2>Welcome User!</h2>
+
+<p>Your profile information:</p>
+
+<ul>
+    <li>Username: <span th:text="${user.username}"></span></li>
+    <li>Roles: <span th:text="${user.roles}"></span></li>
+</ul>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+</body>
+</html>
