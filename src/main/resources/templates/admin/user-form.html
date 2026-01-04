@@ -32,6 +32,9 @@
             font-size: 12px;
             color: #999;
         }
+        .error {
+            color: red;
+        }
 
     </style>
 
@@ -46,30 +49,71 @@
     <input type="hidden" th:field="*{id}"/>
 
     <div>
-        <label>Username:</label>
-        <input type="text" class="form-input" th:field="*{username}" required
-               pattern="[A-Za-z]+"
-               title="User name must contain letters only" />
-    </div>
-    <div></div>
-    <div>
-        <label>Password:</label>
-        <input type="password" class="form-input" th:field="*{password}" th:placeholder="${user.id != null} ? '********' : null"/>
+        <label>Username</label><br>
+        <input type="text" class="form-input"
+               th:field="*{username}">
+        <div th:if="${#fields.hasErrors('username')}"
+             th:text="${#fields.errors('username')[0]}"
+             class="error"></div>
     </div>
 
     <div>
-        <label>Roles:</label>
+        <label>Password:</label>
+        <div>
+            <label>
+                <input type="password" class="form-input" th:field="*{password}"/>
+            </label>
+            <div th:if="${#fields.hasErrors('password')}"
+                 th:text="${#fields.errors('password')[0]}"
+                 class="error"></div>
+        </div>
+    </div>
+
+    <div>
+        <label>First Name</label><br>
+        <label>
+            <input type="text" class="form-input" th:field="*{firstName}"/>
+        </label>
+        <div th:if="${#fields.hasErrors('firstName')}"
+             th:text="${#fields.errors('firstName')[0]}"
+             class="error"></div>
+    </div>
+
+
+    <div>
+        <label>Last Name</label><br>
+        <label>
+            <input type="text" class="form-input" th:field="*{lastName}"/>
+        </label>
+        <div th:if="${#fields.hasErrors('lastName')}"
+             th:text="${#fields.errors('lastName')[0]}"
+             class="error"></div>
+    </div>
+
+    <div>
+        <label>Age</label><br>
+        <label>
+            <input type="number" class="form-input" th:field="*{age}"/>
+        </label>
+        <div th:if="${#fields.hasErrors('age')}"
+             th:text="${#fields.errors('age')[0]}"
+             class="error"></div>
+    </div>
+
+    <div>
+        <label>Roles</label>
         <div th:each="role : ${roles}">
             <label>
                 <input type="checkbox"
-                       th:field="*{roles}"
-                       th:value="${role.id}"/>
+                       name="roleIds"
+                       th:value="${role.id}"
+                       th:checked="${user.roles.contains(role)}"/>
             </label>
             <span th:text="${role.name}"></span>
         </div>
     </div>
 
-
+    <br>
     <button type="submit" class="btn-save">Save</button>
 
 </form>

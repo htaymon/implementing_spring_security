@@ -11,7 +11,15 @@
 
 <ul>
     <li>Username: <span th:text="${user.username}"></span></li>
-    <li>Roles: <span th:text="${user.roles}"></span></li>
+    <li>Name: <span th:text="${user.firstName + ' ' + user.lastName}"></span></li>
+    <li>Age: <span th:text="${user.age}"></span></li>
+    <li>
+        Roles:
+        <span th:each="role, rStat : ${user.roles}">
+            <span th:text="${role.name.replace('ROLE_', '')}"></span>
+            <span th:if="${!rStat.last}">, </span>
+        </span>
+    </li>
 </ul>
 
 <form th:action="@{/logout}" method="post">

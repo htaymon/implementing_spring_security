@@ -1,12 +1,20 @@
 package habsida.spring.boot_security.demo.controller;
 
 import habsida.spring.boot_security.demo.service.RoleService;
+import habsida.spring.boot_security.demo.validation.PatternCheck;
+import habsida.spring.boot_security.demo.validation.RequiredCheck;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import habsida.spring.boot_security.demo.model.User;
 import habsida.spring.boot_security.demo.service.UserService;
 
+import org.springframework.validation.annotation.Validated;
+import javax.validation.Validator;
+import java.util.HashSet;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -14,6 +22,9 @@ public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
+
+    @Autowired
+    private Validator validator;
 
     public AdminController(RoleService roleService, UserService userService) {
         this.roleService = roleService;
@@ -40,11 +51,28 @@ public class AdminController {
     }
 
     @PostMapping("/users/save")
-    public String saveUser(@ModelAttribute("user") User user) {
-        userService.save(user);
+    public String saveUser(
+            @Validated({RequiredCheck.class, PatternCheck.class}) @ModelAttribute("user") User user,
+            BindingResult result,
+            @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
+            Model model) {
+
+        if (user.getId() == null && (user.getPassword() == null || user.getPassword().isBlank())) {
+            result.rejectValue("password", "error.user", "Password is required");
+        }
+
+        if (roleIds != null) {
+            user.setRoles(new HashSet<>(roleService.findByIds(roleIds)));
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("roles", roleService.findAll());
+            return "admin/user-form";
+        }
+
+        userService.save(user, roleIds);
         return "redirect:/admin/users";
     }
-
 
     @GetMapping("/users/edit/{id}")
     public String editUser(@PathVariable Long id, Model model) {

@@ -32,6 +32,8 @@
     <tr>
         <th>No</th>
         <th>Username</th>
+        <th>Name</th>
+        <th>Age</th>
         <th>Roles</th>
         <th>Actions</th>
     </tr>
@@ -39,10 +41,10 @@
 
     <tbody>
     <tr th:each="user, stat : ${users}">
-
         <td th:text="${stat.count}"></td>
-
         <td th:text="${user.username}"></td>
+        <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+        <td th:text="${user.age}"></td>
 
         <td>
             <span th:each="role, rStat : ${user.roles}">
@@ -51,14 +53,10 @@
             </span>
         </td>
 
-        <td class="actions">
-
-            <a th:href="@{/admin/users/edit/{id}(id=${user.id})}">Edit</a>
-            |
+        <td>
+            <a th:href="@{/admin/users/edit/{id}(id=${user.id})}">Edit</a> |
             <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
-               onclick="return confirm('Are you sure you want to delete this user?')">
-                Delete
-            </a>
+               onclick="return confirm('Delete this user?')">Delete</a>
         </td>
     </tr>
     </tbody>
