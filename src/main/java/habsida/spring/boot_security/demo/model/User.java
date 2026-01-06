@@ -23,7 +23,7 @@ public class User implements UserDetails {
             message = "Username may contain letters and digits only",
             groups = PatternCheck.class
     )
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
     private String password;

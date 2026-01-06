@@ -1,6 +1,7 @@
 package habsida.spring.boot_security.demo.service;
 
 import habsida.spring.boot_security.demo.model.Role;
+import habsida.spring.boot_security.demo.exception.UsernameAlreadyExistsException;
 import habsida.spring.boot_security.demo.repository.RoleRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import habsida.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -48,17 +50,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void save(User user,List<Long> roleIds) {
 
-        if (user.getId() != null) {
+        Optional<User> existing = userRepository.findByUsername(user.getUsername());
 
+        if (existing.isPresent()) {
+            if (user.getId() == null) {
+                throw new UsernameAlreadyExistsException();
+            }
+            if (!existing.get().getId().equals(user.getId())) {
+                throw new UsernameAlreadyExistsException();
+            }
+        }
+
+        if (user.getId() != null) {
             User dbUser = userRepository.findById(user.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-
             if (user.getPassword() == null || user.getPassword().isBlank()) {
                 user.setPassword(dbUser.getPassword());
             } else {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
-
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

@@ -1,5 +1,6 @@
 package habsida.spring.boot_security.demo.controller;
 
+import habsida.spring.boot_security.demo.exception.UsernameAlreadyExistsException;
 import habsida.spring.boot_security.demo.service.RoleService;
 import habsida.spring.boot_security.demo.validation.PatternCheck;
 import habsida.spring.boot_security.demo.validation.RequiredCheck;
@@ -70,7 +71,13 @@ public class AdminController {
             return "admin/user-form";
         }
 
-        userService.save(user, roleIds);
+        try {
+            userService.save(user, roleIds);
+        } catch (UsernameAlreadyExistsException e) {
+            result.rejectValue("username", "error.user", e.getMessage());
+            model.addAttribute("roles", roleService.findAll());
+            return "admin/user-form";
+        }
         return "redirect:/admin/users";
     }
 
